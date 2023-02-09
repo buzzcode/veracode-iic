@@ -1,0 +1,11 @@
+# Hidden files
+.*
+!.gitignore
+!.vscode/               # pick up custom launch configs
+!.terraform.lock.hcl
+
+# personal stuff
+.env
+
+# ignore temp files
+~*
