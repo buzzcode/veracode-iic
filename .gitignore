@@ -4,6 +4,10 @@
 !.vscode/               # pick up custom launch configs
 !.terraform.lock.hcl
 
+# Project folders
+/front-end/node_modules/
+/front-end/dist/
+
 # personal stuff
 .env
 
