@@ -5,8 +5,8 @@
 !.terraform.lock.hcl
 
 # Project folders
-/front-end/node_modules/
-/front-end/dist/
+src/front-end/node_modules/
+src/front-end/dist/
 
 # personal stuff
 .env
