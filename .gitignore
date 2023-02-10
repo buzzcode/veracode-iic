@@ -8,6 +8,9 @@
 src/front-end/node_modules/
 src/front-end/dist/
 
+# misc
+iac/terraform.tfstate.backup
+
 # personal stuff
 .env
 
