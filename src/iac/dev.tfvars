@@ -1,2 +1,2 @@
 
-vpc_cidr = "10.0.0.0/16"
+frontend_bucket_name = "iic-front-end"

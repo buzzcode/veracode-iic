@@ -14,8 +14,10 @@ terraform {
 
 #
 # select AWS as our provider
-# fixed to us-west-2 (for isolation)
+# fixed to us-west-1 (for isolation)
 #
 provider "aws" {
-    region = "us-west-2"
+    region = "us-west-1"
+    # access_key = ""
+    # secret_key = ""
 }
