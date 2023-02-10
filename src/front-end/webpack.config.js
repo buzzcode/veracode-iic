@@ -2,11 +2,11 @@
 const { VueLoaderPlugin } = require('vue-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const { web } = require('webpack');
-const env = process.env.NODE_ENV;
+//const { web } = require('webpack');
+//const env = process.env.NODE_ENV;
 
 module.exports = {
-    mode: env == 'production' || env == 'none' ? env : 'development',
+    //mode: env == 'production' || env == 'none' ? env : 'development',
     entry: ['./src/app.js'],
     module: {
         rules: [
