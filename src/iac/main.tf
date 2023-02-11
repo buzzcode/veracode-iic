@@ -7,19 +7,24 @@
 # create the S3 bucket for the front end
 resource "aws_s3_bucket" "frontend_bucket" {
     bucket = var.frontend_bucket_name
-
-    // acl ??
 }
 
-# server-side encryption is required starting Jan 2023
-resource "aws_s3_bucket_server_side_encryption_configuration" "frontend_bucket_crypt" {
-    bucket = aws_s3_bucket.frontend_bucket.id
-    rule {
-        apply_server_side_encryption_by_default {
-          sse_algorithm = "AES256"
-        }
-    }  
-}
+# resource "aws_s3_bucket_ownership_controls" "frontend_ownership" {
+#     bucket = aws_s3_bucket.frontend_bucket.id
+#     rule {
+#         object_ownership = "BucketOwnerEnforced"
+#     }
+# }
+
+# server-side encryption is the default starting Jan 2023
+# resource "aws_s3_bucket_server_side_encryption_configuration" "frontend_bucket_crypt" {
+#     bucket = aws_s3_bucket.frontend_bucket.id
+#     rule {
+#         apply_server_side_encryption_by_default {
+#           sse_algorithm = "AES256"
+#         }
+#     }  
+# }
 
 # waayyy too open resource policy
 resource "aws_s3_bucket_policy" "frontend_bucket_policy" {
@@ -34,7 +39,7 @@ data "aws_iam_policy_document" "allow_all" {
         identifiers = ["*"]
       }
       actions = [
-        "s3:GetObject"          # s3:* for poor security?
+        "s3:*"          # s3:* for poor security?
       ]
       resources = [
         aws_s3_bucket.frontend_bucket.arn,                  # security issue?
@@ -44,16 +49,19 @@ data "aws_iam_policy_document" "allow_all" {
 }
 
 # copy files to the front-end bucket
-# resource "aws_s3_object" "upload_frontend" {
-#     for_each = fileset("../front-end/dist/", "*")
-#     bucket = aws_s3_bucket.frontend_bucket.id
-#     key = each.value
-#     source = "../front-end/dist/${each.value}"
-#     #server_side_encryption = "AES256"
-#      depends_on = [
-#        aws_s3_bucket_server_side_encryption_configuration.frontend_bucket_crypt
-#     ]
-# }
+locals {
+    mime_types = jsondecode(file("mimetype.json"))
+}
+
+# need to set the content-type, as terraform will default to binary/octet-stream
+resource "aws_s3_object" "upload_index" {
+    for_each = fileset("../front-end/dist/", "*")
+    bucket = aws_s3_bucket.frontend_bucket.id
+    key = each.key
+    source = "../front-end/dist/${each.key}"
+    acl = "public-read"
+    content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.key), null)
+}
 
 resource "aws_s3_bucket_website_configuration" "frontend_website_config" {
     bucket = aws_s3_bucket.frontend_bucket.id
