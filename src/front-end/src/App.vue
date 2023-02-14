@@ -2,7 +2,7 @@
     <b-container id="app">
         <b-row align-h="between" align-v="center" class="pb-4 mb-2">
             <b-col>
-                <h3 class="h2">Register for your Veracode free trial</h3>
+                <h3 class="h2">Register for the AWESOME Event!</h3>
             </b-col>
         </b-row>
         <b-row align-v="center" class="mb-2">
@@ -68,10 +68,9 @@
                 console.log(" - firstName: " + this.firstName + " lastName: " + this.lastName);
                 console.log(" - email: " + this.emailAddr + " company: " + this.companyName);
                 
-                let apiRoot = 'https://hd053glbek.execute-api.us-east-1.amazonaws.com';
-                //let apiRoot = 'http://api.veracode-trial.sa.veracode.io';
+                let apiRoot = 'http://localhost:5000';
 
-                axios.post(apiRoot + '/dev', {
+                axios.post(apiRoot + '/register', {
                     'firstname': this.firstName,
                     'lastname': this.lastName,
                     'company': this.company,
