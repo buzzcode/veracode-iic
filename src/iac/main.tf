@@ -49,11 +49,11 @@ data "aws_iam_policy_document" "allow_all" {
 }
 
 # copy files to the front-end bucket
+# need to set the content-type, as terraform will default to binary/octet-stream
 locals {
     mime_types = jsondecode(file("mimetype.json"))
 }
 
-# need to set the content-type, as terraform will default to binary/octet-stream
 resource "aws_s3_object" "upload_index" {
     for_each = fileset("../front-end/dist/", "*")
     bucket = aws_s3_bucket.frontend_bucket.id
@@ -63,6 +63,7 @@ resource "aws_s3_object" "upload_index" {
     content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.key), null)
 }
 
+# setup the S3 bucket as a website
 resource "aws_s3_bucket_website_configuration" "frontend_website_config" {
     bucket = aws_s3_bucket.frontend_bucket.id
     index_document {
