@@ -75,7 +75,7 @@
                     'lastname': this.lastName,
                     'company': this.company,
                     'email': this.emailAddr
-                })
+                }/*, {withCredentials: false}*/)
                 .then(function(response) {
                     console.log('User added OK');
                     console.log(response);
