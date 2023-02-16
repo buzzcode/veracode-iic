@@ -1,4 +1,5 @@
 from flask  import Flask, request, make_response
+import logging
 #from flask_cors import CORS, cross_origin
 import json
 import time
@@ -6,6 +7,8 @@ import time
 app = Flask(__name__)
 #app.config['CORS_HEADERS'] = 'Content-Type'
 #cors = CORS(app, resources={r"/register/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
+
+log = logging.getLogger('werkzeug')
 
 @app.route('/')
 def hello():
@@ -16,7 +19,7 @@ def hello():
 def register():
     rq = request
 
-    print(f"request: {rq.method}")
+    log.info(f"request: {rq.method}")
     if rq.method == 'OPTIONS':
         resp = make_response('OPTIONS handled')
         resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -30,7 +33,7 @@ def register():
     userinfo = json.loads(data)
 
     # send user data to database (yeah, yeah...  threading, async calls, etc.)
-    print(f"userinfo: firstname: {userinfo['firstname']}, lastname: {userinfo['lastname']}")
+    log.info(f"userinfo: firstname: {userinfo['firstname']}, lastname: {userinfo['lastname']}")
 
     resp = make_response('User registered successfully')
     # multiple CORS headers not allowed (if the OPTIONS sends one)
@@ -44,4 +47,4 @@ if __name__ == '__main__':
     t = time.localtime()
     now = time.strftime("%A %B %-d,%Y %H:%M:%S", t)
     print(f"Started: {now}")
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0")     # host="0,0,0,0" for CORS
