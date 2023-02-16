@@ -6,3 +6,7 @@ variable "vpc_cidr" {
 variable "frontend_bucket_name" {
     type = string
 }
+
+variable "backend_service_name" {
+    type = string
+}
