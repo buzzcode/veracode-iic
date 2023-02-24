@@ -9,7 +9,21 @@ resource "aws_ecs_cluster" "iic_backend" {
 resource "aws_ecs_service" "backend_server" {
     name = var.backend_service_name
     task_definition = aws_ecs_task_definition.backend_server_task.arn
+    cluster = aws_ecs_cluster.iic_backend.id
     launch_type = "FARGATE"
+
+    network_configuration {
+        assign_public_ip = true
+
+        security_groups = [
+            var.ingress_sg,
+            var.egress_sg
+        ]
+
+        subnets = [
+            var.subnet
+        ]
+    }   
 }
 
 resource "aws_ecs_task_definition" "backend_server_task" {

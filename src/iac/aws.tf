@@ -17,7 +17,7 @@ terraform {
 # fixed to us-west-1 (for isolation)
 #
 provider "aws" {
-    region = "us-west-1"
+    region = var.aws_region
     profile = var.aws_profile
     # access_key = ""
     # secret_key = ""

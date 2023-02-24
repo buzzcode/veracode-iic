@@ -1,9 +1,4 @@
 
-# create the VPC
-# resource "aws_vpc" "IIC_vpc" {
-#     cidr_block  = var.vpc_cidr
-# }
-
 # create the S3 bucket for the front end
 resource "aws_s3_bucket" "frontend_bucket" {
     bucket = var.frontend_bucket_name
@@ -51,7 +46,7 @@ data "aws_iam_policy_document" "allow_all" {
 # copy files to the front-end bucket
 # need to set the content-type, as terraform will default to binary/octet-stream
 locals {
-    mime_types = jsondecode(file("mimetype.json"))
+    mime_types = jsondecode(file("${path.module}/mimetype.json"))
 }
 
 resource "aws_s3_object" "upload_index" {
