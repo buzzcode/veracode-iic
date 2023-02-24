@@ -6,11 +6,13 @@ resource "aws_cloudwatch_log_group" "iic_backed_logs" {
 resource "aws_ecs_cluster" "iic_backend" {
     name = "iic-backend"
 }
+
 resource "aws_ecs_service" "backend_server" {
     name = var.backend_service_name
     task_definition = aws_ecs_task_definition.backend_server_task.arn
     cluster = aws_ecs_cluster.iic_backend.id
     launch_type = "FARGATE"
+    desired_count = 1
 
     network_configuration {
         assign_public_ip = true
@@ -24,6 +26,12 @@ resource "aws_ecs_service" "backend_server" {
             var.subnet
         ]
     }   
+
+    load_balancer {
+        target_group_arn = aws_lb_target_group.iic_lb_group.arn
+        container_name = "iic-backend"
+        container_port = "5000"
+    }
 }
 
 resource "aws_ecs_task_definition" "backend_server_task" {
@@ -83,13 +91,42 @@ data "aws_iam_policy" "ecs_task_execution_role" {
     arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# resource "aws_iam_role" "iic_backed_task_exec_role" {
-#     name = "iic-backend-task-exec-role"
-#     assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
-# }
-
 # put it all together
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
     role = aws_iam_role.iic_backed_task_exec_role.name
     policy_arn = data.aws_iam_policy.ecs_task_execution_role.arn
+}
+
+# load balancer to allow access
+resource "aws_lb_target_group" "iic_lb_group" {
+    name = "iic-backend"
+    port = 5000
+    protocol = "HTTP"
+    target_type = "ip"
+    vpc_id = var.iic_vpc
+  
+}
+
+resource "aws_lb" "iic_nlb" {
+    name = "iic-nlb"
+    internal = false
+    load_balancer_type = "network"
+
+    subnets = [var.subnet]
+
+    security_groups = [
+        var.ingress_sg,
+        var.egress_sg
+    ]
+}
+
+resource "aws_lb_listener" "iic_nlb_listener" {
+    load_balancer_arn = aws_lb.iic_nlb.arn
+    port = "80"
+    protocol = "HTTP"
+
+    default_action {
+        type = "forward"
+        target_group_arn = aws_lb_target_group.iic_lb_group.arn
+    }
 }

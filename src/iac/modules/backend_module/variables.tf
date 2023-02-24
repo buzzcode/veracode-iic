@@ -15,6 +15,10 @@ variable "egress_sg" {
     type = string
 }
 
+variable "iic_vpc" {
+    type = string
+}
+
 variable "subnet" {
     type = string
 }
